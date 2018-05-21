@@ -19,7 +19,7 @@ instance Show Logic where
     show (p:<->:q) = "("  ++ show p ++ " <-> " ++ show q ++ ")";
 
 exProp = (V "A"):-->(V "B"):-->(V "A")
-
+exProp2 = (V "A"):<->:(V "B")
 exnnf = Not(Not(V "A"))
 --SAVE POINT
 
@@ -30,7 +30,7 @@ freeImpl (V a)        = (V a)
 freeImpl (Not a)      = (Not a)
 freeImpl (p:&&:q)     = (freeImpl p:&&:freeImpl q)
 freeImpl (p:||:q)     = (freeImpl p:||:freeImpl q)
-freeImpl (p:<->:q)    = (freeImpl p:<->:freeImpl q)
+freeImpl (p:<->:q)    = freeImpl(p :--> q) :&&: freeImpl(q :--> p)
 freeImpl (p:-->q)     = freeImpl ((Not q) :||: p);
 
 nnf:: Prop -> Prop
