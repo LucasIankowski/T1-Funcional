@@ -21,7 +21,7 @@ instance Show Logic where
 sugar:: Prop -> String
 sugar a = show a
 
-exPrint = (V "A"):-->(V "B"):-->(V "A")
+exPrint = (((V "A"):-->(V "B")):-->(V "A"))
 
 freeImpl:: Prop -> Prop
 freeImpl (V a)      = (V a)
@@ -29,7 +29,7 @@ freeImpl (Not a)    = (Not a)
 freeImpl (p:&&:q)   = (freeImpl p:&&:freeImpl q)
 freeImpl (p:||:q)   = (freeImpl p:||:freeImpl q)
 freeImpl (p:<->:q)  = freeImpl (p :--> q) :&&: freeImpl(q :--> p)
-freeImpl (p:-->q)   = freeImpl ((Not p) :||: q);
+freeImpl (p:-->q)   = (Not (freeImpl p)) :||: freeImpl q;
 
 exFreeImpl = (V "A"):<->:(V "B")
 
@@ -48,15 +48,9 @@ disjToConj:: Prop -> Prop
 disjToConj (V a)        = V a
 disjToConj (Not(V a))   = Not(V a)
 disjToConj (p:&&:q)     = disjToConj p :&&: disjToConj q
-disjToConj (p:||:q)     = nnf(Not(disjToConj p :||: disjToConj q));
+disjToConj (p:||:q)     = disjToConj(nnf(Not(p :||: q)));
 
 cnf:: Prop -> String
 cnf a = show(disjToConj(nnf(freeImpl(a))))
 
 --SAVE POINT
-
-
-
-
-
-
