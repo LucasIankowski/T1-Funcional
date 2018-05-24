@@ -10,6 +10,8 @@ data Logic =
 
 type Prop = Logic
 
+--Algoritmo de impressão:
+
 instance Show Logic where
     show (V a)      = a
     show (Not p)    = "(~" ++ show p ++ ")"
@@ -21,36 +23,54 @@ instance Show Logic where
 sugar:: Prop -> String
 sugar a = show a
 
-exPrint = (((V "A"):-->(V "B")):-->(V "A"))
+--Algoritmo da forma normal conjuntiva:
 
 freeImpl:: Prop -> Prop
-freeImpl (V a)      = (V a)
-freeImpl (Not a)    = (Not a)
-freeImpl (p:&&:q)   = (freeImpl p:&&:freeImpl q)
-freeImpl (p:||:q)   = (freeImpl p:||:freeImpl q)
-freeImpl (p:<->:q)  = freeImpl (p :--> q) :&&: freeImpl(q :--> p)
-freeImpl (p:-->q)   = (Not (freeImpl p)) :||: freeImpl q;
-
-exFreeImpl = (V "A"):<->:(V "B")
+freeImpl (V a)      = V a
+freeImpl (Not a)    = Not a
+freeImpl (p:-->q)   = freeImpl (Not p :||: q)
+freeImpl (p:<->:q)  = freeImpl(p :--> q) :&&: freeImpl (q :--> p)
+freeImpl (p:&&:q)   = freeImpl p :&&: freeImpl q
+freeImpl (p:||:q)   = freeImpl p :||: freeImpl q
 
 nnf:: Prop -> Prop
-nnf (V a)           = (V a)
+nnf (V a)           = V a
 nnf (Not (V a))     = Not(V a)
 nnf (Not (Not p))   = nnf p
-nnf (Not (p:&&:q))  = nnf ((Not p) :||: (Not q))
-nnf (Not (p:||:q))  = nnf ((Not p) :&&: (Not q))
+nnf (Not (p:&&:q))  = nnf (Not p :||: Not q)
+nnf (Not (p:||:q))  = nnf (Not p :&&: Not q)
 nnf (p:&&:q)        = nnf p :&&: nnf q
-nnf (p:||:q)        = nnf p :||: nnf q;
+nnf (p:||:q)        = nnf p :||: nnf q
 
-exNnf = Not(Not(V "A"))
+cnfP:: Prop -> Prop
+cnfP (p :&&: q) = cnfP p :&&: cnfP q
+cnfP (p :||: q) = distr (cnfP p) (cnfP q)
+cnfP p = p
 
-disjToConj:: Prop -> Prop
-disjToConj (V a)        = V a
-disjToConj (Not(V a))   = Not(V a)
-disjToConj (p:&&:q)     = disjToConj p :&&: disjToConj q
-disjToConj (p:||:q)     = disjToConj(nnf(Not(p :||: q)));
+distr:: Prop -> Prop -> Prop
+distr p (q:&&:r) = distr p q :&&: distr p r
+distr (q:&&:r) p = distr q p :&&: distr r p
+distr p q        = p:||:q 
 
 cnf:: Prop -> String
-cnf a = show(disjToConj(nnf(freeImpl(a))))
+cnf a = sugar(cnfP(nnf(freeImpl(a))))
 
---SAVE POINT
+--Save Point
+--Algoritmo de verificação de tautologia:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
