@@ -58,19 +58,21 @@ cnf a = sugar(cnfP(nnf(freeImpl(a))))
 --Save Point
 --Algoritmo de verificação de tautologia:
 
+positives:: Prop -> [String]
+positives (V a) = [a]
+positives (Not(V a)) = []
+positives (p:||:q) = (positives p) ++ (positives q)
 
+negatives:: Prop -> [String]
+negatives (V _) = []
+negatives (Not(V a)) = [a]
+negatives (p:||:q) = (negatives p) ++ (negatives q)
 
+taut:: Prop -> Bool
+taut (p:&&:q) = taut p && taut q
+taut p = not( null( intersect(positives p) (negatives p)))
 
+intersect :: (Eq a) => [a] -> [a] -> [a]
+intersect as bs = let ns = [ a | a <- as, elem a bs] in [ b | b <- bs, elem b ns]
 
-
-
-
-
-
-
-
-
-
-
-
-
+ex = ((V "P") :||: (Not(V "P")))
