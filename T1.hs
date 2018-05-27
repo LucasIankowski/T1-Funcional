@@ -52,10 +52,9 @@ distr p (q:&&:r) = distr p q :&&: distr p r
 distr (q:&&:r) p = distr q p :&&: distr r p
 distr p q        = p:||:q 
 
-cnf:: Prop -> String
-cnf a = sugar(cnfP(nnf(freeImpl(a))))
+cnf:: Prop -> Prop
+cnf a = cnfP(nnf(freeImpl(a)))
 
---Save Point
 --Algoritmo de verificação de tautologia:
 
 positives:: Prop -> [String]
@@ -75,4 +74,10 @@ taut p = not( null( intersect(positives p) (negatives p)))
 intersect :: (Eq a) => [a] -> [a] -> [a]
 intersect as bs = let ns = [ a | a <- as, elem a bs] in [ b | b <- bs, elem b ns]
 
-ex = ((V "P") :||: (Not(V "P")))
+--Save Point
+
+ex = ((V "P") :||: (Not(V "P"))) --Deve retornar taut = true, (P | (~P))
+
+ex2 = ((Not(V "P")) :&&: (V "Q")) :--> ((V "P") :&&: ((V "R") :--> (V "Q"))) --Deve retornar taut = false, (((~P) & Q) --> (P & (R --> Q)))
+
+
