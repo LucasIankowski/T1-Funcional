@@ -61,13 +61,13 @@ positives:: Prop -> [String]
 positives (V a) = [a]
 positives (Not(V a)) = []
 positives (p:||:q) = (positives p) ++ (positives q)
-positives _ = error "NONCnf"
+positives _ = error "NON CNF"
 
 negatives:: Prop -> [String]
 negatives (V _) = []
 negatives (Not(V a)) = [a]
 negatives (p:||:q) = (negatives p) ++ (negatives q)
-negatives _ = error "NONCnf"
+negatives _ = error "NON CNF"
 
 taut:: Prop -> Bool
 taut (p:&&:q) = taut p && taut q
@@ -80,6 +80,8 @@ intersect as bs = let ns = [ a | a <- as, elem a bs] in [ b | b <- bs, elem b ns
 ex = ((V "P") :||: (Not(V "P"))) --Deve retornar taut = true, (P | (~P))
 
 ex2 = ((Not(V "P")) :&&: (V "Q")) :--> ((V "P") :&&: ((V "R") :--> (V "Q"))) --Deve retornar taut = false, (((~P) & Q) --> (P & (R --> Q)))
+
+ex3 =  (V "p" :&&: V "q") :--> (V "p" :--> V "q")
 
 --Funções do trabalho
 
@@ -95,8 +97,6 @@ hip1 = (((V "av") :&&: (V "vr")) :--> (V "ar"))
 hip2 = ((V "fr") :--> ((V "av") :&&: (V "vr")))
 
 hip3 = (V "ae") :||: ((V "at") :&&: (V "ac"))
-
-
 
 afirm1 = (((V "av") :&&: (V "vr")) :--> (Not(V "ae")))
 
@@ -119,9 +119,3 @@ prova3 = ((((V "av") :&&: (V "vr")) :--> (V "ar")) :&&: ((V "fr") :--> ((V "av")
 prova4 = ((((V "av") :&&: (V "vr")) :--> (V "ar")) :&&: ((V "fr") :--> ((V "av") :&&: (V "vr"))) :&&: (V "ae") :||: ((V "at") :&&: (V "ac"))) :--> (((V "vr") :||: (V "ar")) :--> (V "at"))
 
 prova5 = ((((V "av") :&&: (V "vr")) :--> (V "ar")) :&&: ((V "fr") :--> ((V "av") :&&: (V "vr"))) :&&: (V "ae") :||: ((V "at") :&&: (V "ac"))) :--> (((V "av") :||: (V "ac")) :--> (Not(V "at") :--> (V "vr")))
-
-
-
-
-
-
